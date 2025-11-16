@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}profile Page{% endblock title %}
+
+{% block content %}
+
+<h3>User Profile</h3>
+
+<a href="{% url 'logout' %}">logout</a>
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+<p>Bio: {{ profile.bio }}</p>
+{% endblock content %}
