@@ -9,6 +9,9 @@ from django.dispatch import receiver
 from django.contrib.auth import get_user_model #importing get_user_model to get the custom user model
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.cache import never_cache
 
 User = get_user_model()
 
@@ -37,7 +40,7 @@ class Registerview(View):
       return redirect('login')
     return render(request, 'AccountsApp/register.html', {'form': form})
 
-
+@method_decorator([csrf_protect, never_cache], name='dispatch')
 class LoginView(View):
   LOGIN_ATTEMPT_LIMIT = 3
   LOCKOUT_TIME = timedelta(minutes=1)
@@ -50,6 +53,8 @@ class LoginView(View):
     form = LoginForm(request.POST)
     username = request.POST.get('username')
     password = request.POST.get('password')
+
+    user_obj = None
 
     #checking if user exists in the database
     # user_obj = User.objects.filter(username=username).first() #returns None if user does not exist

@@ -3,6 +3,7 @@
 {% block title %}Login Page{% endblock title %}
 
 {% block content %}
+<div class="login">
   <h2>Login</h2>
   <a href="{% url 'register' %}">register</a>
   <form method="POST">
@@ -18,4 +19,5 @@
     </ul>
 
   {% endif %}
+</div>
 {% endblock content %}
