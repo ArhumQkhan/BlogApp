@@ -7,8 +7,8 @@ from django.views import View
 # Create your views here.
 
 class PostListView(View):
-  def get(self, request, pk):
-    posts = Post.objects.filter(status='Published').order_by('-created_at')
+  def get(self, request):
+    posts = Post.objects.filter(status='published').order_by('-created_at')
     if not posts:
       messages.info(request, "No published posts available.")
 
@@ -28,3 +28,11 @@ class PostCreateView(View):
       post.save()
       messages.success(request, "Post created successfully.")
       return redirect('post-list')
+
+class PostDetailView(View):
+  def get(self, request, pk):
+    post = Post.objects.get(pk=pk)
+    if not post:
+      messages.info(request, "No, Post available")
+
+    return render(request, "PostApp/post_detail.html", {'post': post})

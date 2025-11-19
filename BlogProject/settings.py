@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AccountsApp',
     'PostApp',
+    'DashboardApp',
+    'CommentsApp',
     'tailwind',
     'theme'
 ]

@@ -94,7 +94,8 @@ class LoginView(View):
 
       login(request, user)
       messages.success(request, 'Login successful')
-      return redirect('profile', pk=user.pk)
+      return redirect('dashboard', pk=user.pk)
+      # return redirect('dashboard', pk=user.pk)
     else:
 
       if user_obj:

@@ -7,7 +7,7 @@ class Post(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
   title = models.CharField(max_length=200)
   content = models.TextField()
-  status = models.CharField(choices = POST_STATUS, max_length=20, default='Draft')
+  status = models.CharField(choices = POST_STATUS, max_length=20, default='pending')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   like_count = models.PositiveIntegerField(default=0)

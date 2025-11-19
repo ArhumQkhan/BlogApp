@@ -1,9 +1,9 @@
 from django.urls import path, include
-from .views import DashboardView
+from AccountsApp.views import ProfileView
 
 
 urlpatterns = [
-  path('dashboard/', DashboardView.as_view(), name='dashboard'),
+  path('profile/<int:pk>/', ProfileView.as_view(), name='profile'),
   path('', include('AccountsApp.urls')),
-  path('posts/', include('PostApp.urls')),
+  path('', include('PostApp.urls')),
   ]

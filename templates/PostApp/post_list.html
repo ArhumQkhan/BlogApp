@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}Posts{% endblock title %}
+
+{% block content %}
+
+<h1>Post list</h1>
+<a href="{% url 'post-create' %}">add Post</a>
+
+{% if posts %}
+    {% for post in posts %}
+            <ul>
+                <li>- <a href="{% url 'post-detail' pk=post.pk %}">{{ post.title }} -- {{ post.author.username }} -- {{ post.created_at }}</a></li>
+            </ul>
+    {% endfor %}
+{% else %}
+    <p>No post found.</p>
+{% endif %}
+
+{% endblock content %}

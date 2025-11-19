@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}Post id: {{post.pk}} Detail {% endblock title %}
+
+{% block content %}
+
+<h1>Title: {{post.title}} - {{post.author.username}}</h1>
+<h3>Published: {{post.created_at}}</h3>
+<p>Content: {{post.content}}</p>
+
+{% endblock content %}
