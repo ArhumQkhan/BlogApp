@@ -5,7 +5,35 @@
 {% block content %}
 
 <h1>Title: {{post.title}} - {{post.author.username}}</h1>
-<h3>Published: {{post.created_at}}</h3>
+<h4>Published: {{post.created_at}}</h4>
 <p>Content: {{post.content}}</p>
 
+<form method="post" action="{% url 'post-detail' pk=post.pk %}">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <input type="hidden" name="reply" id="replyInput">
+    <button type="submit">Add Comment</button>
+</form>
+
+<h2>Comments:</h2>
+{% for comment in comments %}
+<ul>
+    <li>
+        {{ comment.author.username }} - {{ comment.content }}
+        <button onclick="document.getElementById('replyInput').value='{{ comment.pk }}'">Reply</button>
+        {% for reply in comment.replies.all %} <!--replies is coming from related name in models-->
+            <ul>
+            {% for reply in comment.replies.all %}
+                <ul>
+                    <li>{{ reply.author.username }} - {{ reply.content }}</li>
+                </ul>
+            {% endfor %}
+            <!-- When you click Reply, it sets the reply hidden input to the parent comment ID.
+
+                Django automatically links the reply via the foreign key. -->
+            </ul>
+        {% endfor %}
+    </li>
+</ul>
+{% endfor %}
 {% endblock content %}

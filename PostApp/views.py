@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import *
+from .models import Post, Comment
 from django.contrib import messages
 from .forms import PostForm, CommentForm
 from django.views import View
@@ -32,30 +32,25 @@ class PostCreateView(View):
 
 class PostDetailView(View):
   def get(self, request, pk):
-    post = Post.objects.get(pk=pk)
+    form = CommentForm()
+    post = get_object_or_404(Post, pk=pk)
+    comments = post.comments.order_by('-created_at')
     if not post:
       messages.info(request, "No, Post available")
+    if not comments:
+      messages.info(request, "No comments available for this post.")
 
-    return render(request, "PostApp/post_detail.html", {'post': post})
+    return render(request, "PostApp/post_detail.html", {'comment_form': form, 'post': post, 'comments': comments})
   
-
-
-class CommentsView(View):
-    # Handle displaying existing comments and comments form
-    def get(self, request, post_id):
-        # 1. Get the post the comments belong to
-        post = get_object_or_404(Post, id=post_id)
-        form = CommentForm()
-        comments = Comment.objects.filter(post=post).order_by('-created_at')
-
-        return render(request, 'CommentsApp/comments.html', {'post': post, 'form': form, 'comments': comments})
-
-    # Handles the submission of a comment
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, id = post_id)
-        form = CommentForm(request.POST)
-
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post # post object created above
-            comment.author = request.user
+  def post(self, request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+      comment = form.save(commit = False)
+      comment.post = post
+      comment.author = request.user
+      # form is already handling the reply field as hidden input
+      # so we don't need to set it explicitly here
+      comment.save()
+      messages.success(request, "Comment added successfully.")
+      return redirect('post-detail', pk=pk)
