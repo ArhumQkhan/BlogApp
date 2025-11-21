@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from .constants import POST_STATUS
+from AccountsApp.models import Users
 
 # Create your models here.
 class Post(models.Model):
@@ -22,3 +23,13 @@ class Attachment(models.Model):
   post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='attachments')
   file = models.FileField() # this file is supposed to be uploaded to S3 or any cloud storage in production
   uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    content = models.TextField()
+    reply = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    like_count = models.IntegerField(default=0)
+    is_reported = models.BooleanField(default=False)

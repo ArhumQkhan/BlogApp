@@ -3,8 +3,8 @@ from .views import *
 from DashboardApp.views import DashboardView
 
 urlpatterns = [
-  path('', LoginView.as_view(), name='login'),
+  path('/', LoginView.as_view(), name='login'),
   path('register/', Registerview.as_view(), name='register'),
   path('Logout/', LogoutView.as_view(), name='logout'),
-  path('dashboard/<int:pk>/', DashboardView.as_view(), name='dashboard'),
+  path('dashboard/<int:pk>/', DashboardView.as_view(), name='dashboard'), #From Dashboard app
 ]

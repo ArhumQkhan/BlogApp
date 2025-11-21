@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'AccountsApp',
     'PostApp',
     'DashboardApp',
-    'CommentsApp',
 ]
 
 

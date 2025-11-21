@@ -1,8 +1,10 @@
+(% if request.path != "/" %)
 <nav style="background-color: aqua;">
     <h1>Navbar</h1>
     <ul>
-        <li><a href="">home</a></li>
+        <li><a href="{% url 'dashboard' pk=pk %}">home</a></li>
         <li><a href="">contacts</a></li>
         <li><a href="{% url 'post-list' %}">posts</a></li>
     </ul>
 </nav>
+(% endif %)

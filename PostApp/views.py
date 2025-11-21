@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import Post, Attachment
+from .models import *
 from django.contrib import messages
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from django.views import View
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -36,3 +37,25 @@ class PostDetailView(View):
       messages.info(request, "No, Post available")
 
     return render(request, "PostApp/post_detail.html", {'post': post})
+  
+
+
+class CommentsView(View):
+    # Handle displaying existing comments and comments form
+    def get(self, request, post_id):
+        # 1. Get the post the comments belong to
+        post = get_object_or_404(Post, id=post_id)
+        form = CommentForm()
+        comments = Comment.objects.filter(post=post).order_by('-created_at')
+
+        return render(request, 'CommentsApp/comments.html', {'post': post, 'form': form, 'comments': comments})
+
+    # Handles the submission of a comment
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id = post_id)
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post # post object created above
+            comment.author = request.user
