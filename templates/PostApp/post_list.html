@@ -5,16 +5,26 @@
 {% block content %}
 
 <h1>Post list</h1>
-<a href="{% url 'post-create' %}">add Post</a>
+<div class="card">
+    <div class="card-body">
+        <a class="btn btn-success mb-3" href="{% url 'post-create' %}">add Post</a>
 
-{% if posts %}
-    {% for post in posts %}
-            <ul>
-                <li>- <a href="{% url 'post-detail' pk=post.pk %}">{{ post.title }} -- {{ post.author.username }} -- {{ post.created_at }}</a></li>
-            </ul>
-    {% endfor %}
-{% else %}
-    <p>No post found.</p>
-{% endif %}
+        {% if posts %}
+            {% for post in posts %}
+                <ul>
+                    <div class="card">
+                        <div class="card-body">
+                            <li>
+                                <a class="text-dark" href="{% url 'post-detail' pk=post.pk %}"><strong>{{ post.title }} - {{ post.author.username }} </strong></a> ({{ post.created_at }})
+                            </li>
+                        </div>
+                    </div>
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>No post found.</p>
+        {% endif %}
+    </div>
+</div>
 
 {% endblock content %}

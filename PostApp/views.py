@@ -35,22 +35,20 @@ class PostDetailView(View):
     form = CommentForm()
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.order_by('-created_at')
-    if not post:
-      messages.info(request, "No, Post available")
-    if not comments:
-      messages.info(request, "No comments available for this post.")
-
-    return render(request, "PostApp/post_detail.html", {'comment_form': form, 'post': post, 'comments': comments})
+    return render(request, "PostApp/post_detail.html", {'post': post, 'form': form, 'comments': comments})
   
   def post(self, request, pk):
     post = get_object_or_404(Post, pk=pk)
     form = CommentForm(request.POST)
     if form.is_valid():
-      comment = form.save(commit = False)
+      comment = form.save(commit=False)
       comment.post = post
       comment.author = request.user
-      # form is already handling the reply field as hidden input
-      # so we don't need to set it explicitly here
+      parent_id = request.POST.get("parent_id")
+      if parent_id:
+        parent_comment = Comment.objects.get(pk=parent_id)
+        comment.parent = parent_comment
       comment.save()
       messages.success(request, "Comment added successfully.")
       return redirect('post-detail', pk=pk)
+

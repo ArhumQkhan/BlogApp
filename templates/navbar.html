@@ -1,10 +1,28 @@
 {% if request.path != "/" %}
-<nav style="background-color: aqua;">
-    <h1>Navbar</h1>
-    <ul>
-        <li><a href="{% url 'dashboard' pk=request.user.pk %}">home</a></li>
-        <li><a href="">contacts</a></li>
-        <li><a href="{% url 'post-list' %}">posts</a></li>
-    </ul>
+<nav class="navbar navbar-expand-sm nav-light bg-light">
+    <div class="container">
+        <a href="{% url 'dashboard' pk=request.user.pk %}" class="navbar-brand mb-0 h1">BlogApp</a>
+
+        <button type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" class="navbar-toggler" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' pk=request.user.pk %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'post-list' %}">Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' pk=request.user.pk %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
 {% endif %}

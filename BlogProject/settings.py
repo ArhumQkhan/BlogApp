@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'AccountsApp',
     'PostApp',
     'DashboardApp',
+    'widget_tweaks',
 ]
 
 
