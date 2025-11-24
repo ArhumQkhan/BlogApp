@@ -4,6 +4,7 @@ from django.contrib import messages
 from .forms import PostForm, CommentForm
 from django.views import View
 from django.shortcuts import get_object_or_404
+from .templatetags import get_dict
 
 # Create your views here.
 
@@ -34,8 +35,16 @@ class PostDetailView(View):
   def get(self, request, pk):
     form = CommentForm()
     post = get_object_or_404(Post, pk=pk)
-    comments = post.comments.order_by('-created_at')
-    return render(request, "PostApp/post_detail.html", {'post': post, 'form': form, 'comments': comments})
+    comments = Comment.objects.filter(post=post, parent=None)
+    replies = Comment.objects.filter(post=post).exclude(parent=None)
+    replyDict = {}
+    for reply in replies:
+      if reply.parent.pk not in replyDict.keys():
+        replyDict[reply.parent.pk] = [reply]
+      else:
+        replyDict[reply.parent.pk].append(reply)
+
+    return render(request, "PostApp/post_detail.html", {'post': post, 'form': form, 'comments': comments, 'replyDict': replyDict})
   
   def post(self, request, pk):
     post = get_object_or_404(Post, pk=pk)
