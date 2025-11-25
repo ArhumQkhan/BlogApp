@@ -26,7 +26,7 @@ COPY . /BlogApp/
 RUN python3 -m venv /BlogApp/venv
 
 # Set enviroment variable so docker container uses the virtual enviroment
-ENV PATH = "/BlogApp/venv/bin:$PATH"
+ENV PATH="/BlogApp/venv/bin:$PATH"
 
 # Install Python dependencies
 RUN pip install --upgrade pip

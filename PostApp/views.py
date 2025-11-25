@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .models import Post, Comment
 from django.contrib import messages
 from .forms import PostForm, CommentForm
 from django.views import View
 from django.shortcuts import get_object_or_404
 from .templatetags import get_dict
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
+@method_decorator(login_required, name='dispatch')
 class PostListView(View):
   def get(self, request):
     posts = Post.objects.filter(status='published').order_by('-created_at')
@@ -61,3 +65,15 @@ class PostDetailView(View):
       messages.success(request, "Comment added successfully.")
       return redirect('post-detail', pk=pk)
 
+
+@login_required
+def post_like_view(request, pk):
+  post = get_object_or_404(Post, id=pk)
+  user_exists = post.likes.filter(username=request.user.username).exists()
+  
+  if user_exists:
+    post.likes.remove(request.user)
+  else:
+    post.likes.add(request.user)
+
+  return render(request, 'Snippets/likes.html', {'post':post})

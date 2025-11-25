@@ -7,16 +7,25 @@ class Post(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
   title = models.CharField(max_length=200)
   content = models.TextField()
-  status = models.CharField(choices = POST_STATUS, max_length=20, default='pending')
+  status = models.CharField(choices = POST_STATUS, max_length=20, default='published')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
-  like_count = models.PositiveIntegerField(default=0)
   comment_count = models.PositiveIntegerField(default=0)
   is_reported = models.BooleanField(default=False)
+  likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="likedposts", through="LikedPost")
 
   def __str__(self):
     return f"{self.title} - {self.author.username}"
 
+
+class LikedPost(models.Model):
+  post = models.ForeignKey(Post, on_delete=models.CASCADE)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self):
+     return f'{self.user.username} - {self.post.title}'
+  
 
 class Attachment(models.Model):
   post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='attachments')
@@ -35,3 +44,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post.title}"
+    

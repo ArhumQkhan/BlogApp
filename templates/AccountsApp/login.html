@@ -1,23 +1,36 @@
 {% extends 'layout.html' %}
+{% load widget_tweaks %}
+
 
 {% block title %}Login Page{% endblock title %}
 
 {% block content %}
-<div class="login">
-  <h2>Login</h2>
-  <a href="{% url 'register' %}">register</a>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
-  {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{message}}</li>
-      {% endfor %}
-    </ul>
+<div style="display: flex; justify-content: center; align-items: center;">
+  <div class="card" style="width: 18rem; height: 25rem;">
+    <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <h2>Login</h2>
 
-  {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <label class="mt-2 mb-2">{{form.username.label_tag}}</lable>
+          {{ form.username|add_class:"form-control"|attr:"placeholder:Enter username" }}
+
+        <label class="mt-2 mb-2">{{form.password.label_tag}}</lable>
+          {{ form.password|add_class:"form-control" }}
+        <div class="d-grid gap-2 mt-2">
+          <button class="mt-3 btn btn-outline-secondary" type="submit">Login</button>
+        </div>
+      </form>
+      {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock content %}

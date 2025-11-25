@@ -5,8 +5,38 @@
 {% block content %}
 
 <h3>User Profile</h3>
+<div class="card">
+    <div class="card-body row">
+        <div class="col-2">
+            image here..
+        </div>
 
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-<p>Bio: {{ profile.bio }}</p>
+        <div class="col-10">
+            <div style="display: flex; justify-content: space-between;">
+                <h3>{{ user.username }}</h3>
+                <p>Email: {{ user.email }}</p>
+            </div>
+            <p>Bio: {{ profile.bio }}</p>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div class="card">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <h2>My Posts:</h2>
+            </div>
+            <div>
+                <a class="btn btn-success" href="{% url 'post-create' %}">
+                    Add Post
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 {% endblock content %}

@@ -1,0 +1,16 @@
+
+<div style="display: flex;">
+    <div class="me-1 ms-2" style="display: flex; justify-content: center; align-items: center;">
+        {{post.likes.count}}
+    </div>
+    {% if user.is_authenticated %}
+        <a class="like-btn ms-2 text-dark" style="cursor: pointer;" hx-get="{% url 'post-like' pk=post.id %}" hx-target="closest div" hx-swap="outerHTML">
+            {% if user in post.likes.all %}
+            <strong>Liked</strong>
+            {% else %}
+            Like
+            {% endif %}
+        </a>
+    {% endif %}
+</div>
+

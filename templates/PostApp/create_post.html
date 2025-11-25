@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load widget_tweaks %}
 
 {% block title %}Add Posts{% endblock title %}
 
@@ -7,8 +8,15 @@
 <form method="post">
 
     {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit">Create</button>
+    <div class="mb-3">
+        <label>{{form.title.label_tag}}</lable>
+        {{ form.title|add_class:"form-control"|attr:"placeholder:Write Title here..." }}
+    </div>
+    <div class="mb-3">
+        <lable>{{form.content.label_tag}}</lable>
+        {{ form.content|add_class:"form-control"|attr:"placeholder:Write Post..." }}
+    </div>
+    <button type="submit" class="btn btn-success">Create</button>
 
 </form>
 
