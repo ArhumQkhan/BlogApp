@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit Post{% endblock title %}
+
+{% block content %}
+
+<h1>Edit Book</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+
+
+{% endblock content %}

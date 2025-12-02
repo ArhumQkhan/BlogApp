@@ -13,8 +13,8 @@
             <h4>By {{ post.author.username }} - {{ post.created_at }}</h4>
         </div>
         <div style="display: flex; justify-content: center; align-items: center;">
-            <a class="btn btn-outline-secondary me-2" href="">edit</a>
-            <a class="btn btn-danger me-2" href="">delete</a>
+            <a class="btn btn-outline-secondary me-2" href="{% url 'post-edit' pk=post.pk %}">edit</a>
+            {% include 'Snippets/post_delete.html' %}
         </div>
     </div>
     <hr>
