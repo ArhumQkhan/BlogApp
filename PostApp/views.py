@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from .templatetags import get_dict
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views import generic
 from django.urls import reverse_lazy
 import logging
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostListView(View):
   def get(self, request):
     posts = Post.objects.filter(status='published').order_by('-created_at')
@@ -25,7 +26,7 @@ class PostListView(View):
 
     return render(request, 'PostApp/post_list.html', {'posts': posts})
 
-
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostCreateView(View):
   def get(self, request):
     form = PostForm()
@@ -40,6 +41,7 @@ class PostCreateView(View):
       messages.success(request, "Post created successfully.")
       return redirect('post-list')
 
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostDetailView(View):
   def get(self, request, pk):
     form = CommentForm()
@@ -83,7 +85,7 @@ def post_like_view(request, pk):
 
   return render(request, 'Snippets/likes.html', {'post':post})
 
-
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostEditView(generic.UpdateView):
   model = Post
   fields = ['title', 'content']
@@ -92,6 +94,7 @@ class PostEditView(generic.UpdateView):
   def get_success_url(self):
     return reverse_lazy('post-detail', kwargs={'pk': self.object.pk})
 
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostDeleteView(generic.DeleteView):
   model = Post
   template_name = 'PostApp/post_detail.html'

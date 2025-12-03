@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 import logging
 
@@ -32,10 +33,12 @@ class Registerview(View):
       return redirect('login')
     return render(request, 'AccountsApp/register.html', {'form': form})
 
+
 @method_decorator([csrf_protect, never_cache], name='dispatch')
 class LoginView(View):
 
   def get(self, request):
+    request.session.flush()
     form = LoginForm()
     return render(request, 'AccountsApp/login.html', {'form': form})
 
@@ -46,10 +49,8 @@ class LoginView(View):
       username = form.cleaned_data.get('username')
       password = form.cleaned_data.get('password')
 
-
       user =  authenticate(request=request, username=username, password=password)
-
-            
+         
       if user:
 
         login(request, user)
@@ -62,19 +63,23 @@ class LoginView(View):
           return redirect('login')
 
 
+@method_decorator(never_cache, name='dispatch')
 class LogoutView(View):
   def get(self, request):
+
     logout(request)
     messages.success(request, 'Logged out successfully')
     return redirect('login')
 
 
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class ProfileView(View):
   def get(self, request, pk):
     profile = Profile.objects.get(user__pk=pk)
     return render(request, 'AccountsApp/profile.html', {'profile': profile})
 
 
+@method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class ProfileEditView(View):
   def get(self, request):
     user_form = UserEditForm(instance=request.user)
