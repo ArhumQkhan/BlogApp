@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
 
 
 {% block title %}Login Page{% endblock title %}
@@ -10,16 +11,12 @@
     <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
       <h2>Login</h2>
 
-
       <form method="POST">
         {% csrf_token %}
-        <label class="mt-2 mb-2">{{form.username.label_tag}}</lable>
-          {{ form.username|add_class:"form-control"|attr:"placeholder:Enter username" }}
-
-        <label class="mt-2 mb-2">{{form.password.label_tag}}</lable>
-          {{ form.password|add_class:"form-control" }}
+        
+        {{ form|crispy }}
         <div class="d-grid gap-2 mt-2">
-          <button class="mt-3 btn btn-outline-secondary" type="submit">Login</button>
+          <button class="mt-3 btn btn-success" type="submit">Login</button>
         </div>
       </form>
       {% if messages %}

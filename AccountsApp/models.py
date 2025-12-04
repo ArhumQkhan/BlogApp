@@ -17,7 +17,7 @@ class Users(AbstractUser):
 
 class Profile(models.Model):
   user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name='profile') #i am using AUTH_USER_MODEL here to make it future proof, everytime the user model changes in settings, it will automatically show here
-  bio = models.TextField(blank=True, null=True)
+  bio = models.CharField(max_length=150, blank=True, null=True)
   updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):

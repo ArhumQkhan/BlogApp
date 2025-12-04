@@ -1,9 +1,12 @@
 from django import forms
-from .models import Users, Profile
+from .models import Profile
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class RegisterForm(forms.ModelForm):
   class Meta:
-    model = Users
+    model = User
     fields = ['first_name', 'last_name','username', 'email', 'password']
 
 
@@ -14,7 +17,7 @@ class LoginForm(forms.Form):
 
 class UserEditForm(forms.ModelForm):
   class Meta:
-    model = Users
+    model = User
     fields = ['username', 'email']
 
 

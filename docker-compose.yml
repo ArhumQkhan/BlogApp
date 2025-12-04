@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: blog_app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/BlogApp         # Mount your local code for live reload
+    ports:
+      - "8000:8000"        # Map container port 8000 to host
+    env_file:
+      - ./.env             # Optional: load environment variables
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      - db                 # Optional, only if you use Postgres
+
+  db:
+    image: postgres:15
+    container_name: blog_db
+    environment:
+      POSTGRES_DB: blogdb
+      POSTGRES_USER: bloguser
+      POSTGRES_PASSWORD: securepassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:

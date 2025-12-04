@@ -12,21 +12,34 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Environ setup
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+
+# Load .env only if it exists (dev machine)
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    environ.Env.read_env(env_file)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)#16l2uv8qw2&ju24qkzsb$!=1a#40d&zulkw#q@_%4$nt$ty$'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOST', default=[])
 
 
 # Application definition
@@ -42,7 +55,8 @@ INSTALLED_APPS = [
     'PostApp',
     'DashboardApp',
     'axes',
-    'widget_tweaks',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -162,6 +176,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'AccountsApp.Users'
 
+
+# Axes for calculating failed logins and locking out
 AXES_LOCK_OUT_AT_FAILURE = True  # track lockouts
 
 # Maximum failed attempts before lockout
@@ -170,4 +186,8 @@ AXES_FAILURE_LIMIT = 3
 # Lockout time in hours
 AXES_COOLOFF_TIME = timedelta(seconds=10) 
 
+# crispy forms for designing forms on templates
+# This tells Django which front-end framework you’re using for form rendering.
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 

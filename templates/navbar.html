@@ -1,4 +1,7 @@
-{% if request.path == "/" %}
+{% url 'login' as login_url %}
+{% url 'register' as regitser_url %}
+
+{% if request.path == login_url %}
 <nav class="navbar navbar-expand-sm nav-light bg-light">
     <div class="container">
         <a href="{% url 'login' %}" class="navbar-brand mb-0 h1">BlogApp</a>
@@ -17,7 +20,7 @@
     </div>
 </nav>
 
-{% elif request.path == "/signup/" %}
+{% elif request.path == regitser_url %}
 <nav class="navbar navbar-expand-sm nav-light bg-light">
     <div class="container">
         <a class="navbar-brand mb-0 h1">BlogApp</a>

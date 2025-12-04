@@ -1,5 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim
+# 'FROM' specifies the base image for the container
+# 'python:3.11-slim' is an official Python image with Python 3.11.
+# 'slim' is a lightweight version (smaller size, fewer unnecessary packages).
+# this gives you Python pre-installed without having to install it yourself
 
 # ------------ Set enviroment variables -------------
 
@@ -7,7 +11,9 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 # Python output is sent straight to terminal without buffering.
 # By default, Python buffers output (stores it in memory before printing), which can delay logs in Docker.
+
 ENV PYTHONUNBUFFERED=1
+# Forces python to flush output immediately
 
 # ------------ Set work directory -------------
 

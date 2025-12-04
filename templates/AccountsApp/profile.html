@@ -17,7 +17,7 @@
                 <p>Email: {{ user.email }}</p>
             </div>
             <p>Bio: {{ profile.bio }}</p>
-            <a href="">Edit</a>
+            <a class="btn btn-outline-secondary" href="{% url 'profile-edit' pk=user.pk %}">Edit</a>
         </div>
     </div>
 </div>
@@ -35,6 +35,15 @@
                     Add Post
                 </a>
             </div>
+        </div>
+        <div>
+            {% for post in user.posts.all %}
+            <ul class="list-group">
+                <li class="list-group-item mt-2">
+                <a class="text-dark" href="{% url 'post-detail' pk=post.pk %}">{{post.title}} - ({{post.created_at}})</a>
+                </li>
+            </ul>
+            {% endfor %}
         </div>
 
     </div>

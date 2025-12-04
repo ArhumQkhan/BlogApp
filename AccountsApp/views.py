@@ -75,25 +75,28 @@ class LogoutView(View):
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class ProfileView(View):
   def get(self, request, pk):
-    profile = Profile.objects.get(user__pk=pk)
-    return render(request, 'AccountsApp/profile.html', {'profile': profile})
+    user = User.objects.prefetch_related('posts').get(pk=pk)
+    profile = user.profile
+    return render(request, 'AccountsApp/profile.html', {'profile': profile, 'user': user})
 
 
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class ProfileEditView(View):
-  def get(self, request):
-    user_form = UserEditForm(instance=request.user)
-    bio_form = ProfileEditForm(instance=request.user.profile)
+  def get(self, request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user_form = UserEditForm(instance=user)
+    bio_form = ProfileEditForm(instance=user.profile)
 
-    return render(request, 'AccountsApp/profile_edit.html', {'user_form': user_form, 'bio_form': bio_form})
+    return render(request, 'AccountsApp/profile_edit.html', {'user_form': user_form, 'bio_form': bio_form, 'user': user})
   
-  def post(self, request):
-    user_form = UserEditForm(request.POST, instance=request.user)
-    bio_form = ProfileEditForm(request.POST, instance=request.user.profile)
+  def post(self, request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user_form = UserEditForm(request.POST, instance=user)
+    bio_form = ProfileEditForm(request.POST, instance=user.profile)
 
     if user_form.is_valid() and bio_form.is_valid():
       user_form.save()
       bio_form.save()
-      return redirect('profile', pk=request.user.pk)
+      return redirect('profile', pk=user.pk)
 
-    return render(request, 'AccountsApp/profile_edit.html', {'user_form': user_form, 'bio_form': bio_form})
+    return render(request, 'AccountsApp/profile_edit.html', {'user_form': user_form, 'bio_form': bio_form, 'user': user})

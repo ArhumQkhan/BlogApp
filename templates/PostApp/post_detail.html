@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
-{% load widget_tweaks %}
 {% load get_dict %}
+{% load crispy_forms_tags %}
+
 
 {% block title %}Post Detail{% endblock title %}
 
@@ -12,10 +13,12 @@
             <h1>{{ post.title }}</h1>
             <h4>By {{ post.author.username }} - {{ post.created_at }}</h4>
         </div>
+        {% if post.author.pk == request.user.pk %}
         <div style="display: flex; justify-content: center; align-items: center;">
             <a class="btn btn-outline-secondary me-2" href="{% url 'post-edit' pk=post.pk %}">edit</a>
             {% include 'Snippets/post_delete.html' %}
         </div>
+        {% endif %}
     </div>
     <hr>
     <p>{{ post.content }}</p>
@@ -34,8 +37,7 @@
 <form method="post" action="{% url 'post-detail' pk=post.pk %}">
     {% csrf_token %}
     <div class="p-3 border rounded bg-light">
-        <span class="h4">{{ form.comment.label_tag }}</span>
-        {{ form.comment|add_class:"form-control"|attr:"placeholder:Write comment here..." }}
+        {{ form|crispy }}
         <button type="submit" class="btn btn-primary mt-2">Add Comment</button>
     </div>
 
@@ -64,8 +66,7 @@
                     <form method="post" action="{% url 'post-detail' pk=post.pk %}">
                         {% csrf_token %}
                         <div class="p-3 border rounded bg-light">
-                            <span class="h4">{{ form.comment.label_tag }}</span>
-                            {{ form.comment|add_class:"form-control"|attr:"placeholder:Write reply here..." }}
+                            {{ form|crispy }}
                             <input type="hidden" name="parent_id" value="{{ comment.pk }}">
                             <button type="submit" class="btn btn-primary mt-2">Add reply</button>
                         </div>
