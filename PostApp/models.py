@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
 from .constants import POST_STATUS
+from ckeditor.fields import RichTextField
 
 # Create your models here.
 class Post(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
   title = models.CharField(max_length=200)
-  content = models.TextField()
+  content = RichTextField(blank=True, null=True)
   status = models.CharField(choices = POST_STATUS, max_length=20, default='published')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
