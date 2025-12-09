@@ -75,6 +75,7 @@ class LogoutView(View):
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class ProfileView(View):
   def get(self, request, pk):
+    # breakpoint()
     user = User.objects.prefetch_related('posts').get(pk=pk)
     profile = user.profile
     return render(request, 'AccountsApp/profile.html', {'profile': profile, 'user': user})
@@ -92,7 +93,7 @@ class ProfileEditView(View):
   def post(self, request, pk):
     user = get_object_or_404(User, pk=pk)
     user_form = UserEditForm(request.POST, instance=user)
-    bio_form = ProfileEditForm(request.POST, instance=user.profile)
+    bio_form = ProfileEditForm(request.POST, request.FILES, instance=user.profile)
 
     if user_form.is_valid() and bio_form.is_valid():
       user_form.save()

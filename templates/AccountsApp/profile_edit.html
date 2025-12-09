@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<form action="{% url 'profile-edit' pk=user.pk %}" method="post">
+<form action="{% url 'profile-edit' pk=user.pk %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <h5>User Details</h5>
     {{ user_form|crispy }}

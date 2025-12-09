@@ -2,11 +2,13 @@ from django.db import models
 from django.conf import settings
 from .constants import POST_STATUS
 from ckeditor.fields import RichTextField
+from PIL import Image
 
 # Create your models here.
 class Post(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
   title = models.CharField(max_length=200)
+  post_image = models.ImageField(null=True, blank=True, upload_to="images/")
   content = RichTextField(blank=True, null=True)
   status = models.CharField(choices = POST_STATUS, max_length=20, default='published')
   created_at = models.DateTimeField(auto_now_add=True)
@@ -17,6 +19,20 @@ class Post(models.Model):
 
   def __str__(self):
     return f"{self.title} - {self.author.username}"
+  
+  #------------ Image Resizing --------------
+  
+  def save(self, *args, **kwargs):
+     super().save(*args, **kwargs) #first we will save the object
+
+     if self.post_image:
+        image_path = self.post_image.path
+        img = Image.open(image_path)
+
+        max_size = (800, 800) # width, height
+        img.thumbnail(max_size) # resizing while keeping the aspect ratio
+        img.save(image_path)
+
 
 
 class LikedPost(models.Model):

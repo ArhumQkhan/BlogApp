@@ -33,7 +33,7 @@ class PostCreateView(View):
     return render(request, "PostApp/create_post.html", {'form': form})
 
   def post(self, request):
-    form = PostForm(request.POST)
+    form = PostForm(request.POST, request.FILES)
     if form.is_valid():
       post = form.save(commit=False)
       post.author = request.user
@@ -88,7 +88,7 @@ def post_like_view(request, pk):
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostEditView(generic.UpdateView):
   model = Post
-  fields = ['title', 'content']
+  fields = ['title', 'content', 'post_image']
   template_name = 'PostApp/post_edit.html'
 
   def get_success_url(self):

@@ -7,7 +7,7 @@
     <div class="card-body">
         <h3>Create Post</h3>
         <div class="form-group">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data"> <!-- to tell the form to allow images and encode the images we use 'enctype="multipart/form-data"' -->
                 {% csrf_token %}
                 {{ form.media }}
                 {{ form.as_p }}
