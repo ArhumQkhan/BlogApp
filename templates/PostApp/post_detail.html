@@ -15,7 +15,12 @@
         </div>
         {% if post.author.pk == request.user.pk %}
         <div style="display: flex; justify-content: center; align-items: center;">
-            <a class="btn btn-outline-secondary me-2" href="{% url 'post-edit' pk=post.pk %}">edit</a>
+            <a href="{% url 'download_pdf' post.pk %}" class="btn btn-secondary me-2">
+                Download PDF
+            </a>
+            <a class="btn btn-outline-secondary me-2" href="{% url 'post-edit' pk=post.pk %}">
+                edit
+            </a>
             {% include 'Snippets/post_delete.html' %}
         </div>
         {% endif %}

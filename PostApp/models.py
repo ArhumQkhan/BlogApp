@@ -9,6 +9,7 @@ class Post(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
   title = models.CharField(max_length=200)
   post_image = models.ImageField(null=True, blank=True, upload_to="images/")
+  post_doc = models.FileField(null=True, blank=True, upload_to="docs/")
   content = RichTextField(blank=True, null=True)
   status = models.CharField(choices = POST_STATUS, max_length=20, default='published')
   created_at = models.DateTimeField(auto_now_add=True)

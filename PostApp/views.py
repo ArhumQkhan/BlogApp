@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Post, Comment
 from django.contrib import messages
-from .forms import PostForm, CommentForm
+from .forms import *
 from django.views import View
 from django.shortcuts import get_object_or_404
 from .templatetags import get_dict
@@ -11,6 +11,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views import generic
 from django.urls import reverse_lazy
+from fpdf import FPDF
+from django.utils.html import strip_tags
 import logging
 
 logger = logging.getLogger(__name__)
@@ -36,10 +38,15 @@ class PostCreateView(View):
     form = PostForm(request.POST, request.FILES)
     if form.is_valid():
       post = form.save(commit=False)
+      uploaded_file = request.FILES.get("post_doc")
+      if uploaded_file:
+        file_content = uploaded_file.read().decode('utf-8', errors='ignore')
+        post.content = file_content
       post.author = request.user
       post.save()
       messages.success(request, "Post created successfully.")
       return redirect('post-list')
+
 
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
 class PostDetailView(View):
@@ -99,3 +106,26 @@ class PostDeleteView(generic.DeleteView):
   model = Post
   template_name = 'PostApp/post_detail.html'
   success_url = reverse_lazy('post-list')
+
+@login_required
+def download_pdf(request, pk):
+  post = Post.objects.get(pk=pk)
+  pdf = FPDF()
+  content = post.content
+  content = strip_tags(content)
+  title = strip_tags(post.title)
+
+  pdf.add_page()
+  pdf.set_font("Arial", size=12)
+  text_content = f"{title}\n\n{content}"
+  pdf.multi_cell(0, 10, text_content) # 0 for full width, 10 for line height
+
+  # breakpoint()
+  # Output PDF to response
+  # pdf.output(dest='F').encode('latin1')  # Ensure PDF is written correctly
+  pdf_output = pdf.output(dest='S').encode('latin1')  # 'S' returns PDF as string
+  response = HttpResponse(pdf_output, content_type='application/pdf')
+  response['Content-Disposition'] = f'attachment; filename="{post.title}.pdf"'
+
+  # response.write(pdf_output)
+  return response
