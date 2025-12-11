@@ -42,8 +42,8 @@ services:
       EMAIL_PORT: 587
       EMAIL_USE_TLS: "True"
       # These must come from .env.prod
-      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
-      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      # EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      # EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
 
     restart: always
 

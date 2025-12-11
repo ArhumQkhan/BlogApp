@@ -40,9 +40,12 @@
 <hr>
 
 <!-- ----------Like Button--------- -->
-
-{% include 'Snippets/likes.html' %}
-
+<div class="d-flex" style="justify-content: space-between;">
+    {% include 'Snippets/likes.html' %}
+    <a class="btn btn-outline-secondary" href="{% url 'post-share' post.pk %}">
+        Share
+    </a>
+</div>
 
 <hr>
 

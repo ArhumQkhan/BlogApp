@@ -12,6 +12,8 @@ from django.views import generic
 from django.urls import reverse_lazy
 from fpdf import FPDF
 from django.utils.html import strip_tags
+from django.core.mail import send_mail
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -150,3 +152,18 @@ def download_pdf(request, pk):
   response['Content-Disposition'] = f'attachment; filename="{post.title}.pdf"'
 
   return response
+
+def send_mail_view(request, pk):
+  post = get_object_or_404(Post, pk=pk)
+  try:
+    send_mail(
+      subject=post.title,
+      message=post.content,
+      from_email=settings.DEFAULT_FROM_EMAIL,
+      recipient_list=["arhum.qayyum@devsinc.com"]
+    )
+  except Exception as e:
+    logger.warning(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
+    return HttpResponse(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
+
+  return redirect("post-detail", pk=pk)
