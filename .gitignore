@@ -2,9 +2,7 @@ venv/
 __pycache__/
 *.pyc
 env/
-.env
-.env.dev
-.env.prod
+.env*
 *.log
 db.sqlite3
 /staticfiles/
