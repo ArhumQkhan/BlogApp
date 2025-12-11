@@ -1,0 +1,14 @@
+[tool.ruff]
+# Which files/folders to include
+src = ["."]
+# Which files/folders to exclude
+exclude = ["venv", "migrations", "__pycache__"]
+
+# Maximum allowed line length
+line-length = 88
+
+# Which rules to check
+lint.select = ["E", "F", "W", "B", "C"]
+
+# Which rules to ignore
+lint.ignore = ["E501"]  # Line too long

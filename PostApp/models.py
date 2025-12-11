@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from .constants import POST_STATUS
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 from PIL import Image
 
 # Create your models here.
@@ -10,7 +10,7 @@ class Post(models.Model):
   title = models.CharField(max_length=200)
   post_image = models.ImageField(null=True, blank=True, upload_to="images/")
   post_doc = models.FileField(null=True, blank=True, upload_to="docs/")
-  content = RichTextField(blank=True, null=True)
+  content = CKEditor5Field('Content', config_name='default', blank=True, null=True)
   status = models.CharField(choices = POST_STATUS, max_length=20, default='published')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -20,9 +20,9 @@ class Post(models.Model):
 
   def __str__(self):
     return f"{self.title} - {self.author.username}"
-  
+
   #------------ Image Resizing --------------
-  
+
   def save(self, *args, **kwargs):
      super().save(*args, **kwargs) #first we will save the object
 
@@ -43,7 +43,7 @@ class LikedPost(models.Model):
 
   def __str__(self):
      return f'{self.user.username} - {self.post.title}'
-  
+
 
 class Attachment(models.Model):
   post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='attachments')
@@ -62,4 +62,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post.title}"
-    

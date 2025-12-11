@@ -45,6 +45,13 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
+EMAIL_BACKEND = env('EMAIL_BACKEND')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 # Application definition
 
@@ -61,7 +68,7 @@ INSTALLED_APPS = [
     'axes',
     'crispy_forms',
     'crispy_bootstrap5',
-    'ckeditor',
+    'django_ckeditor_5',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -71,6 +78,7 @@ AUTHENTICATION_BACKENDS = [
     # Django ModelBackend is the default authentication backend.
     'django.contrib.auth.backends.ModelBackend',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -106,23 +114,6 @@ WSGI_APPLICATION = 'BlogProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": env("POSTGRES_DB"),
-#         "USER": env("POSTGRES_USER"),
-#         "PASSWORD": env("POSTGRES_PASSWORD"),
-#         "HOST": env("POSTGRES_HOST"),  # should match service name in docker-compose
-#         "PORT": env("POSTGRES_PORT"),
-#     }
-# }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": os.path.join(BASE_DIR, os.getenv("SQLITE_NAME", "db.sqlite3")),
-#     }
-# }
 
 # Database settings
 if env.bool('USE_SQLITE', default=False):
@@ -173,17 +164,23 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
+        'file':{
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/django.log',
+            'formatter': 'verbose',
+            'level': 'WARNING',
+        },
     },
     'loggers':{
         '': {
-            'handler': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True
         }
     },
     'formatters':{
         'verbose':{
-        'format': '{levelname} - Line:{lineno} - {asctime} - {module} - {process:d} - {thread:d} - {message}',
+        'format': '{levelname} - {pathname} - {funcName} - Line:{lineno:d} - {asctime} - {message}',
         'style': '{',
         }
     },
@@ -204,10 +201,33 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'staticfiles'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', 'code', '|',
+            'link', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
+            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent', '|',
+            'fontSize', 'fontColor', 'fontBackgroundColor', 'highlight', 'fontFamily', '|',
+            'alignment', '|',
+            'imageInsert', 'imageTextAlternative', 'imageStyle:full', 'imageStyle:side', '|',
+            'undo', 'redo', 'removeFormat'
+        ],
+        'height': 300,
+        'width': '100%',
+    }
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -221,10 +241,10 @@ AUTH_USER_MODEL = 'AccountsApp.Users'
 AXES_LOCK_OUT_AT_FAILURE = True  # track lockouts
 
 # Maximum failed attempts before lockout
-AXES_FAILURE_LIMIT = 3 
+AXES_FAILURE_LIMIT = 3
 
 # Lockout time in hours
-AXES_COOLOFF_TIME = timedelta(seconds=10) 
+AXES_COOLOFF_TIME = timedelta(seconds=10)
 
 # crispy forms for designing forms on templates
 # This tells Django which front-end framework you’re using for form rendering.

@@ -1,7 +1,6 @@
 from axes.signals import user_locked_out
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from django.dispatch import receiver
 from django.db.models.signals import post_save
 from .models import Profile
 
