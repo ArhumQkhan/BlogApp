@@ -45,6 +45,13 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
+EMAIL_BACKEND = env('EMAIL_BACKEND')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 # Application definition
 
@@ -71,6 +78,7 @@ AUTHENTICATION_BACKENDS = [
     # Django ModelBackend is the default authentication backend.
     'django.contrib.auth.backends.ModelBackend',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -106,23 +114,6 @@ WSGI_APPLICATION = 'BlogProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": env("POSTGRES_DB"),
-#         "USER": env("POSTGRES_USER"),
-#         "PASSWORD": env("POSTGRES_PASSWORD"),
-#         "HOST": env("POSTGRES_HOST"),  # should match service name in docker-compose
-#         "PORT": env("POSTGRES_PORT"),
-#     }
-# }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": os.path.join(BASE_DIR, os.getenv("SQLITE_NAME", "db.sqlite3")),
-#     }
-# }
 
 # Database settings
 if env.bool('USE_SQLITE', default=False):
