@@ -7,7 +7,7 @@ from PIL import Image
 # Create your models here.
 
 class Users(AbstractUser):
-  
+
   role = models.CharField(choices = USER_ROLE, default = 'User', max_length=10)
   is_email_verified = models.BooleanField(default=False)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -24,7 +24,7 @@ class Profile(models.Model):
 
   def __str__(self):
     return f"Profile of {self.user.username}"
-  
+
   def save(self, *args, **kwargs):
     super().save(*args, **kwargs)
 
