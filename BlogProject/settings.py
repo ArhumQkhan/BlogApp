@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_ckeditor_5',
+    'django_celery_beat',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -251,3 +252,7 @@ AXES_COOLOFF_TIME = timedelta(seconds=10)
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+#Celery
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # or RabbitMQ
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

@@ -15,9 +15,6 @@
         </div>
         {% if post.author.pk == request.user.pk %}
         <div style="display: flex; justify-content: center; align-items: center;">
-            <a href="{% url 'download_pdf' post.pk %}" class="btn btn-secondary me-2">
-                Download PDF
-            </a>
             <a class="btn btn-outline-secondary me-2" href="{% url 'post-edit' pk=post.pk %}">
                 edit
             </a>
@@ -42,9 +39,35 @@
 <!-- ----------Like Button--------- -->
 <div class="d-flex" style="justify-content: space-between;">
     {% include 'Snippets/likes.html' %}
-    <a class="btn btn-outline-secondary" href="{% url 'post-share' post.pk %}">
-        Share
-    </a>
+    <div>
+        <a href="{% url 'download_pdf' post.pk %}" class="btn btn-secondary me-2">
+            Download PDF
+        </a>
+        <button 
+        class="btn btn-outline-secondary" 
+        type="button" 
+        data-bs-toggle="offcanvas" 
+        data-bs-target="#offcanvasRight" 
+        aria-controls="offcanvasRight"
+        hx-get="{% url 'post-share' pk=post.pk %}"
+        hx-target="#offcanvas-body"
+        hx-swap="innerHTML">
+            Share
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasRightLabel">E-mail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body" id="offcanvas-body">
+                {% include 'Snippets/mail_form.html' %}
+
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 
 <hr>

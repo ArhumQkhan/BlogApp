@@ -1,0 +1,12 @@
+{% load crispy_forms_tags %}
+
+<form 
+  hx-post="{% url 'post-share' post.pk %}" 
+  hx-target="#offcanvas-body" 
+  hx-swap="innerHTML">
+
+  {% csrf_token %}
+  {{ mail_form|crispy }}
+
+  <button class="btn btn-outline-secondary">Send</button>
+</form>

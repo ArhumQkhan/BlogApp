@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Post, Comment
 from django.contrib import messages
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, MailForm
 from django.views import View
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,10 +14,11 @@ from fpdf import FPDF
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth import get_user_model
 import logging
 
 logger = logging.getLogger(__name__)
-
+User = get_user_model()
 # Create your views here.
 
 @method_decorator([login_required(login_url='login'), never_cache], name='dispatch')
@@ -153,17 +154,38 @@ def download_pdf(request, pk):
 
   return response
 
-def send_mail_view(request, pk):
-  post = get_object_or_404(Post, pk=pk)
-  try:
-    send_mail(
-      subject=post.title,
-      message=post.content,
-      from_email=settings.DEFAULT_FROM_EMAIL,
-      recipient_list=["arhum.qayyum@devsinc.com"]
-    )
-  except Exception as e:
-    logger.warning(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
-    return HttpResponse(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
 
-  return redirect("post-detail", pk=pk)
+class SendMailView(View):
+
+  def get(self, request, pk):
+    mail_form = MailForm()
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, "Snippets/mail_form.html", {"mail_form":mail_form, "post":post})
+  
+  def post(self, request, pk):
+    mail_form = MailForm(request.POST)
+    post = get_object_or_404(Post, pk=pk)
+    user = get_object_or_404(User, pk=post.author.pk)
+
+    if mail_form.is_valid():
+      recipient = mail_form.cleaned_data.get("recipient")
+
+      try:
+        send_mail(
+          subject=post.title,
+          message=post.content,
+          from_email=user.email,
+          recipient_list=[recipient]
+        )
+      except Exception as e:
+        messages.error(request, f"Error sending the mail | Error: {e}")
+        logger.warning(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
+        return HttpResponse(f"Error occured sending the mail in 'send_mail_view' | Error: {e}")
+      
+      messages.success(request, "Mail sent successfully")
+      logger.info("Form sent successfully")
+      return HttpResponse("Email sent successfully")
+    
+    logger.warning("mail_form is not valid SendMailView")
+    return render(request, "Snippets/mail_form.html", {"mail_form":mail_form, "post":post})
+  

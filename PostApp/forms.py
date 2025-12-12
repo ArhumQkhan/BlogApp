@@ -1,6 +1,8 @@
 from django import forms
 from .models import Post, Comment
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class PostForm(forms.ModelForm):
   class Meta:
@@ -17,3 +19,5 @@ class CommentForm(forms.ModelForm):
     model = Comment
     fields = ['comment']
 
+class MailForm(forms.Form):
+  recipient = forms.EmailField(label="Recipient")
