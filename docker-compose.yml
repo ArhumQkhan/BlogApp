@@ -14,13 +14,19 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
+  redis:
+    image: redis:7
+    ports:
+      - "6378:6379"
+    restart: always
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: blog_app
     env_file:
-      - .env.prod            # Load Gmail SMTP vars here
+      - .env.prod
     command: python manage.py runserver 0.0.0.0:8001
     volumes:
       - .:/BlogApp
@@ -29,22 +35,43 @@ services:
       - "8001:8001"
     depends_on:
       - db
-    environment:
-      POSTGRES_DB: blogdb
-      POSTGRES_USER: bloguser
-      POSTGRES_PASSWORD: blogpass
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
+      - redis
+    # environment:
+    #   POSTGRES_DB: blogdb
+    #   POSTGRES_USER: bloguser
+    #   POSTGRES_PASSWORD: blogpass
+    #   POSTGRES_HOST: db
+    #   POSTGRES_PORT: 5432
 
-      # These override OR confirm .env.prod values
-      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
-      EMAIL_HOST: smtp.gmail.com
-      EMAIL_PORT: 587
-      EMAIL_USE_TLS: "True"
-      # These must come from .env.prod
-      # EMAIL_HOST_USER: ${EMAIL_HOST_USER}
-      # EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
 
+    restart: always
+
+  celery:
+    build: .
+    command: celery -A BlogProject.celery worker -l info
+    container_name: celery_worker
+    volumes:
+      - .:/BlogApp
+      - media_data:/BlogApp/media/
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env.prod
+    restart: always
+
+  celery-beat:
+    build: .
+    command: celery -A BlogProject.celery beat -l info
+    container_name: celery_beat
+    volumes:
+      - .:/BlogApp
+      - media_data:/BlogApp/media/
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env.prod
     restart: always
 
 volumes:
