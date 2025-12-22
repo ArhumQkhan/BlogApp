@@ -35,7 +35,7 @@
                 <h2>My Posts:</h2>
             </div>
             <div>
-                <a class="btn btn-success" href="{% url 'post-create' %}">
+                <a class="btn btn-success" href="{% url 'post-create' pk=user.pk %}">
                     Add Post
                 </a>
             </div>

@@ -3,7 +3,7 @@ from .views import PostListView, PostCreateView, PostDetailView, PostEditView, P
 
 urlpatterns = [
   path('posts/', PostListView.as_view(), name='post-list'),
-  path('create/', PostCreateView.as_view(), name='post-create'),
+  path('profile/<int:pk>/create/', PostCreateView.as_view(), name='post-create'),
   path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
   path('post/<int:pk>/like/', post_like_view, name='post-like'),
   path('post/<int:pk>/edit/', PostEditView.as_view(), name='post-edit'),

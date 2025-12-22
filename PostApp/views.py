@@ -45,7 +45,7 @@ class PostCreateView(View):
 
     return render(request, "PostApp/create_post.html", {'form': form})
 
-  def post(self, request):
+  def post(self, request, pk):
 
     form = PostForm(request.POST, request.FILES)
     if form.is_valid():
@@ -57,7 +57,7 @@ class PostCreateView(View):
       post.author = request.user
       post.save()
       messages.success(request, "Post created successfully.")
-      return redirect('post-list')
+      return redirect('profile', pk=pk)
     else:
       logger.warning("PostForm is not valid")
       return HttpResponse("Form is not Valid", status=400)
