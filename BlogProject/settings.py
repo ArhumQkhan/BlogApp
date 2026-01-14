@@ -14,8 +14,6 @@ from pathlib import Path
 from datetime import timedelta
 import environ
 import os
-from django.contrib.auth.models import User
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,20 +38,30 @@ if env_path.exists():
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
-ENVIROMENT = env('ENVIROMENT', default='production')
+ENVIRONMENT = env('ENVIROMENT', default='production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if ENVIROMENT=='development':
+if ENVIRONMENT=='development':
     DEBUG = True
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+
+# HTTPS & secure cookies
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = env('EMAIL_PORT')
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
@@ -88,7 +96,6 @@ AUTHENTICATION_BACKENDS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -181,7 +188,7 @@ LOGGING = {
     'loggers':{
         '': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         }
     },
@@ -192,6 +199,7 @@ LOGGING = {
         }
     },
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -204,19 +212,33 @@ USE_I18N = True
 
 USE_TZ = True
 
+# -------------------------------
+# STATIC & MEDIA FILES (S3)
+# -------------------------------
+# Remove WhiteNoise settings
+# Use django-storages with S3 for production
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+INSTALLED_APPS += ["storages"]
 
-STATIC_URL = '/static/'
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_QUERYSTRING_AUTH = False  # public files without signed URLs
+AWS_S3_REGION_NAME = env("AWS_REGION", default="us-east-1")
+
+if ENVIRONMENT == "development":
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    MEDIA_ROOT = BASE_DIR / "media"
+else:
+    STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
+    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticfiles'),
+    BASE_DIR / 'static',
 ]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CKEDITOR_5_CONFIGS = {
     'default': {
@@ -261,6 +283,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 #Celery
 # CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 # CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
-CELERY_BROKER_URL = "redis://redis:6379/0"
-CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
