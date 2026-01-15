@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'django_ckeditor_5',
     'django_celery_beat',
+    'storages',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -212,29 +213,28 @@ USE_TZ = True
 # Remove WhiteNoise settings
 # Use django-storages with S3 for production
 
-INSTALLED_APPS += ["storages"]
-
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_QUERYSTRING_AUTH = False  # public files without signed URLs
 AWS_S3_REGION_NAME = env("AWS_REGION", default="us-east-1")
 
-if ENVIRONMENT == "development":
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-    MEDIA_ROOT = BASE_DIR / "media"
-else:
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-    MEDIA_ROOT = BASE_DIR / "media"
-    STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
-    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
-
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
 STATICFILES_DIRS = [
     BASE_DIR / 'staticfiles',
 ]
+
+if ENVIRONMENT == "development":
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / "static"
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / "media"
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+else:
+    STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
+    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 CKEDITOR_5_CONFIGS = {
     'default': {
