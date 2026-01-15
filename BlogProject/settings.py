@@ -219,11 +219,11 @@ AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_QUERYSTRING_AUTH = False  # public files without signed URLs
 AWS_S3_REGION_NAME = env("AWS_REGION", default="us-east-1")
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'staticfiles',
-]
 
 if ENVIRONMENT == "development":
+    STATICFILES_DIRS = [
+    BASE_DIR / 'staticfiles',
+    ]
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / "static"
     MEDIA_URL = '/media/'
@@ -231,6 +231,7 @@ if ENVIRONMENT == "development":
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 else:
+    STATICFILES_DIRS = []
     STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
     MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
