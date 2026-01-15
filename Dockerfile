@@ -32,17 +32,12 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
-# Collect static files at runtime via entrypoint
-COPY --chmod=755 docker/django/entrypoint.sh /entrypoint.sh
-
 # Create non-root user
 RUN adduser --disabled-password appuser
 USER appuser
 
 # Expose Django port
 EXPOSE 8001
-
-ENTRYPOINT ["/entrypoint.sh"]
 
 # Run Django server
 CMD ["gunicorn", "BlogProject.wsgi:application", "--bind", "0.0.0.0:8001", "--workers", "3", "--access-logfile", "-", "--error-logfile", "-"]

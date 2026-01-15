@@ -11,7 +11,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/django/Dockerfile
+      dockerfile: Dockerfile
     container_name: blog_app
     env_file:
       - .env.prod
@@ -29,7 +29,7 @@ services:
   celery:
     build:
       context: .
-      dockerfile: docker/django/Dockerfile
+      dockerfile: Dockerfile
     command: celery -A BlogProject.celery worker -l info
     container_name: celery_worker
     volumes:
@@ -44,7 +44,7 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: docker/django/Dockerfile
+      dockerfile: Dockerfile
     command: celery -A BlogProject.celery beat -l info
     container_name: celery_beat
     volumes:
