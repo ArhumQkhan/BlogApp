@@ -2,8 +2,8 @@
 FROM python:3.11-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /BlogApp
@@ -32,13 +32,12 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
+# Collect static files at runtime via entrypoint
+COPY --chmod=755 docker/django/entrypoint.sh /entrypoint.sh
+
 # Create non-root user
 RUN adduser --disabled-password appuser
 USER appuser
-
-# Collect static files at runtime via entrypoint
-COPY docker/django/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 # Expose Django port
 EXPOSE 8001

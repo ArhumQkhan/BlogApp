@@ -1,18 +1,6 @@
 version: '3.9'
 
 services:
-  db:
-    image: postgres:15
-    container_name: blog_db
-    environment:
-      POSTGRES_DB: blogdb
-      POSTGRES_USER: bloguser
-      POSTGRES_PASSWORD: blogpass
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
 
   redis:
     image: redis:7
@@ -23,7 +11,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/django/Dockerfile
     container_name: blog_app
     env_file:
       - .env.prod
@@ -34,40 +22,40 @@ services:
     expose:
       - "8001"
     depends_on:
-      - db
       - redis
 
     restart: always
 
   celery:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/django/Dockerfile
     command: celery -A BlogProject.celery worker -l info
     container_name: celery_worker
     volumes:
       - .:/BlogApp
       - media_data:/BlogApp/media/
     depends_on:
-      - db
       - redis
     env_file:
       - .env.prod
     restart: always
 
   celery-beat:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/django/Dockerfile
     command: celery -A BlogProject.celery beat -l info
     container_name: celery_beat
     volumes:
       - .:/BlogApp
       - media_data:/BlogApp/media/
     depends_on:
-      - db
       - redis
     env_file:
       - .env.prod
     restart: always
 
 volumes:
-  postgres_data:
   static_data:
   media_data:
