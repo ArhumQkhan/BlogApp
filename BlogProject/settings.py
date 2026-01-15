@@ -46,7 +46,7 @@ if ENVIRONMENT=='development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+ALLOWED_HOSTS = env(['*'])
 
 # HTTPS & secure cookies
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
