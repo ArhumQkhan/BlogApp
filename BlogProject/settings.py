@@ -233,7 +233,9 @@ if ENVIRONMENT == "development":
 else:
     STATICFILES_DIRS = []
     STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
+    STATIC_ROOT = BASE_DIR / "static"
     MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
