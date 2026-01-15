@@ -20,7 +20,7 @@ services:
       - .:/BlogApp
       - media_data:/BlogApp/media/
     expose:
-      - "8001"
+      - "13.60.182.77:8001"
     depends_on:
       - redis
 

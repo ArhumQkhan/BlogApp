@@ -233,7 +233,7 @@ STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'staticfiles',
 ]
 
 CKEDITOR_5_CONFIGS = {
