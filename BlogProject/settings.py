@@ -230,10 +230,10 @@ AWS_QUERYSTRING_AUTH = False  # optional, allows public URLs without signing
 
 if ENVIRONMENT == "development":
     STATICFILES_DIRS = [
-    BASE_DIR / 'staticfiles',
+    BASE_DIR / 'static',
     ]
     STATIC_URL = '/static/'
-    STATIC_ROOT = BASE_DIR / "static"
+    STATIC_ROOT = BASE_DIR / "local_static"
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / "media"
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
