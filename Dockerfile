@@ -30,6 +30,8 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
+RUN chmod +x /BlogApp/wait-for-rds.sh
+
 # Create non-root user
 RUN adduser --disabled-password appuser
 USER appuser
