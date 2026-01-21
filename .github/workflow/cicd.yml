@@ -15,7 +15,7 @@ jobs:
 
     # 2️⃣ Build Docker images
     - name: Build Docker Images
-      run: docker-compose build
+      run: docker-compose build --no-cache
 
     # Optional: Validate containers on GitHub runner
     - name: Validate containers
@@ -39,7 +39,6 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd ~/BlogApp
 
           # Pull latest images
           docker compose pull
