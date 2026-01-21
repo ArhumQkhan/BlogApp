@@ -38,7 +38,7 @@ if env_path.exists():
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
-ENVIRONMENT = env('ENVIROMENT', default='production')
+ENVIRONMENT = env('ENVIRONMENT', default='production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT=='development':
@@ -52,12 +52,18 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # HTTPS & secure cookies
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
-SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
-CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
-SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
+#SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
+#CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE") True sends requests only to https
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://13.60.84.163:8001",
+]
 
 EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_HOST = env('EMAIL_HOST')
@@ -214,11 +220,10 @@ USE_TZ = True
 # Remove WhiteNoise settings
 # Use django-storages with S3 for production
 
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-AWS_QUERYSTRING_AUTH = False  # public files without signed URLs
 AWS_S3_REGION_NAME = env("AWS_REGION", default="us-east-1")
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False  # optional, allows public URLs without signing
 
 
 if ENVIRONMENT == "development":
@@ -232,13 +237,19 @@ if ENVIRONMENT == "development":
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 else:
-    STATICFILES_DIRS = []
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+    }
+    STATIC_ROOT = BASE_DIR / "local_static"
+    STATICFILES_DIRS = [BASE_DIR / "static"]
     STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
-    STATIC_ROOT = BASE_DIR / "static"
     MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
     MEDIA_ROOT = BASE_DIR / "media"
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 CKEDITOR_5_CONFIGS = {
     'default': {
