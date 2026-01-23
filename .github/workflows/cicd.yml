@@ -34,49 +34,12 @@ jobs:
         script: |
           set -e
           cd ~/app
-
-          echo "Pulling latest images..."
           docker-compose pull
-
-          echo "Stopping old containers..."
           docker-compose down
-
-          echo "Running migrations..."
-          docker-compose run --rm \
-            -e ENVIRONMENT=production \
-            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-            -e ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }} \
-            -e USE_SQLITE=False \
-            -e POSTGRES_DB=${{ vars.POSTGRES_DB }} \
-            -e POSTGRES_USER=${{ vars.POSTGRES_USER }} \
-            -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-            -e POSTGRES_HOST=${{ vars.POSTGRES_HOST }} \
-            -e POSTGRES_PORT=5432 \
-            -e EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
-            -e EMAIL_HOST=smtp.gmail.com \
-            -e EMAIL_PORT=587 \
-            -e EMAIL_USE_TLS=True \
-            -e EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }} \
-            -e EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} \
-            -e DEFAULT_FROM_EMAIL=${{ vars.DEFAULT_FROM_EMAIL }} \
-            -e CELERY_BROKER_URL=redis://redis:6379/0 \
-            -e CELERY_RESULT_BACKEND=redis://redis:6379/0 \
-            -e CSRF_COOKIE_SECURE=True \
-            -e SESSION_COOKIE_SECURE=True \
-            -e SECURE_SSL_REDIRECT=False \
-            -e SECURE_HSTS_SECONDS=31536000 \
-            -e AWS_STORAGE_BUCKET_NAME=${{ vars.AWS_STORAGE_BUCKET_NAME }} \
-            -e AWS_REGION=${{ vars.AWS_REGION }} \
-            web ./wait-for-rds.sh ${{ vars.POSTGRES_HOST }} 5432 python manage.py migrate
-
-          echo "Collecting static files..."
+          docker-compose run --rm web python manage.py migrate
           docker-compose run --rm web python manage.py collectstatic --noinput
-
-          echo "Starting containers..."
           docker-compose up -d
 
-          echo "Cleaning dangling images..."
-          docker image prune -f
 
     # 6️⃣ Health check
     - name: Health check
