@@ -1,0 +1,65 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1️⃣ Checkout code
+    - uses: actions/checkout@v4
+
+    # 2️⃣ Build Docker images
+    - name: Build Docker images
+      run: docker compose build --no-cache
+
+    # 3️⃣ Login to Docker Hub
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # 4️⃣ Push images
+    - name: Push Docker images
+      run: docker compose push
+
+    # 5️⃣ Deploy to EC2
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ubuntu
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          set -e
+          cd ~/BlogApp
+
+          echo "Pulling latest images..."
+          docker compose pull
+
+          echo "Stopping old containers..."
+          docker compose down
+
+          echo "Running migrations..."
+          docker compose run --rm \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_NAME=${{ secrets.DB_NAME }} \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            web ./wait-for-rds.sh ${{ secrets.DB_HOST }} 5432 python manage.py migrate
+
+          echo "Collecting static files..."
+          docker compose run --rm web python manage.py collectstatic --noinput
+
+          echo "Starting containers..."
+          docker compose up -d
+
+          echo "Cleaning dangling images..."
+          docker system prune -f
+
+    # 6️⃣ Health check
+    - name: Health check
+      run: |
+        sleep 15
+        curl -f http://${{ secrets.SERVER_IP }}:8000 || exit 1
