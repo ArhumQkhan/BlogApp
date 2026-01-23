@@ -13,6 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: blog_app
+    image: arhumqkhan/blogapp-web:latest
     # env_file:
     #   - .env.prod
     command: gunicorn BlogProject.wsgi:application --bind 0.0.0.0:8001 --workers 3
@@ -30,6 +31,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: arhumqkhan/blogapp-celery:latest
     command: celery -A BlogProject.celery worker -l info
     container_name: celery_worker
     volumes:
@@ -45,6 +47,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: arhumqkhan/blogapp-celery-beat:latest
     command: celery -A BlogProject.celery beat -l info
     container_name: celery_beat
     volumes:
