@@ -43,11 +43,31 @@ jobs:
 
           echo "Running migrations..."
           docker compose run --rm \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
-            -e DB_NAME=${{ secrets.DB_NAME }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            web ./wait-for-rds.sh ${{ secrets.DB_HOST }} 5432 python manage.py migrate
+            -e ENVIRONMENT=production \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            -e ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }} \
+            -e USE_SQLITE=False \
+            -e POSTGRES_DB=${{ vars.POSTGRES_DB }} \
+            -e POSTGRES_USER=${{ vars.POSTGRES_USER }} \
+            -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            -e POSTGRES_HOST=${{ vars.POSTGRES_HOST }} \
+            -e POSTGRES_PORT=5432 \
+            -e EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
+            -e EMAIL_HOST=smtp.gmail.com \
+            -e EMAIL_PORT=587 \
+            -e EMAIL_USE_TLS=True \
+            -e EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }} \
+            -e EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} \
+            -e DEFAULT_FROM_EMAIL=${{ vars.DEFAULT_FROM_EMAIL }} \
+            -e CELERY_BROKER_URL=redis://redis:6379/0 \
+            -e CELERY_RESULT_BACKEND=redis://redis:6379/0 \
+            -e CSRF_COOKIE_SECURE=True \
+            -e SESSION_COOKIE_SECURE=True \
+            -e SECURE_SSL_REDIRECT=False \
+            -e SECURE_HSTS_SECONDS=31536000 \
+            -e AWS_STORAGE_BUCKET_NAME=${{ vars.AWS_STORAGE_BUCKET_NAME }} \
+            -e AWS_REGION=${{ vars.AWS_REGION }} \
+            web ./wait-for-rds.sh ${{ vars.POSTGRES_HOST }} 5432 python manage.py migrate
 
           echo "Collecting static files..."
           docker compose run --rm web python manage.py collectstatic --noinput
