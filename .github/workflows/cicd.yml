@@ -33,7 +33,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           set -e
-          cd ~/BlogApp
+          cd ~/app
 
           echo "Pulling latest images..."
           docker-compose pull
